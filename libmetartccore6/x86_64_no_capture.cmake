@@ -1,3 +1,6 @@
 SET(CMAKE_SYSTEM_NAME Linux)
 SET(CMAKE_C_COMPILER gcc)
 SET(CMAKE_CXX_COMPILER g++)
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g -fsanitize=address")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g -fsanitize=address")
+

@@ -156,13 +156,15 @@ void* yang_run_rtctcp_thread(void *obj) {
 void* yang_run_rtctcp_thread_srs(void *obj) {
 
     YangRtcSocketSession *sock = (YangRtcSocketSession*) obj;
-    char readBuffer[kRtpPacketSize] = { 0 };
+	static const size_t READ_BUF_SIZE = 64 * 1024;
+    uint8_t *readBuffer = (uint8_t *)malloc(READ_BUF_SIZE);
 
 	sock->isStart = yangtrue;
 
 	if (yang_socket_connect(sock->fd, &sock->remote_addr) == -1) {
 		yang_socket_close(sock->fd);
 		yang_error_wrap(ERROR_SOCKET, "rtc tcp connect socket error(%d)",GetSockError());
+		free(readBuffer);
 		return NULL;
 	}
 
@@ -227,6 +229,9 @@ void* yang_run_rtctcp_thread_srs(void *obj) {
 	sock->isStart = yangfalse;
 	yang_socket_close(sock->fd);
 	sock->fd = -1;
+
+	free(readBuffer);
+	readBuffer = NULL;
 
 	return NULL;
 }
