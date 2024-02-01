@@ -120,15 +120,17 @@ int32_t yang_http_url_parse(YangIpFamilyType familyType,char* url,YangUrlData* d
 	}
 	int32_t len = (int) (p - url);
     if (len == 4 && yang_memcmp(url, "http", 4) == 0) {
-    	 data->netType = Yang_Webrtc;
-    	 data->port=1985;
-    } else if (len == 5 && yang_memcmp(url, "https", 5) == 0) {
-        data->netType = Yang_Webrtc;
-        data->port=1985;
+		data->netType = Yang_Webrtc;
+		data->port = 80;
+	} else if (len == 5 && yang_memcmp(url, "https", 5) == 0) {
+		data->netType = Yang_Webrtc;
+		data->port = 443;
 	} else if (len == 6 && yang_memcmp(url, "webrtc", 6) == 0) {
-        data->netType = Yang_Webrtc;
-        data->port=1985;
-	} else {
+		data->netType = Yang_Webrtc;
+		data->port = 1985;
+	}
+	else
+	{
 		return 1;
 	}
 	p += 3;

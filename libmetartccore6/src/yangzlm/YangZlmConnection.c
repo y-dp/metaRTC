@@ -12,6 +12,8 @@
 #include <yangutil/sys/YangLog.h>
 #include <yangutil/sys/YangCString.h>
 #include <yangutil/sys/YangHttp.h>
+#include <yangutil/sys/YangUrl.h>
+
 #define Yang_SDP_BUFFERLEN 1024*12
 
 typedef struct{
@@ -83,23 +85,44 @@ int32_t yang_zlm_query(YangRtcSession* session,ZlmSdpResponseType* zlm,int32_t i
 
 int32_t yang_zlm_doHandleSignal(YangRtcSession* session,ZlmSdpResponseType* zlm,char* sdp,int32_t localport, YangStreamDirection role) {
 	int32_t err = Yang_Ok;
-
-#if 1 // yangdingpeng mod
-	const char *uri = "index/api/webrtc?app=live&stream=test&type=play&sign=498c3b68066401e48e86673247bcd109";
-	err = yang_zlm_query(session,
-						 zlm,
-						 role==YangRecvonly?1:0,
-						 (char*)session->context.streamConfig->remoteIp,
-						 session->context.streamConfig->remotePort,
-						 uri,
-						 sdp);
-#else
 	char apiurl[256] ;
+
 	yang_memset(apiurl,0,sizeof(apiurl));
 	yang_sprintf(apiurl, "index/api/webrtc?app=%s&stream=%s&type=%s", session->context.streamConfig->app,session->context.streamConfig->stream,role==YangRecvonly?"play":"push");
 	err=yang_zlm_query(session,zlm,role==YangRecvonly?1:0,(char*)session->context.streamConfig->remoteIp,session->context.streamConfig->remotePort,apiurl, sdp);
-#endif
 
+	return err;
+}
+
+// yangdingpeng mod, 增加url参数
+static int32_t yang_zlm_doHandleSignal2(YangRtcSession* session,
+										ZlmSdpResponseType* zlm,
+										char* sdp,
+										int32_t localport,
+										YangStreamDirection role,
+										const char *url) {
+	int32_t err = Yang_Ok;
+	YangUrlData url_data;
+	if (strncmp(url, "https://", strlen("https://")) == 0) {
+		yang_error("https zlm url is not supported yet");
+		yang_debug("url: \"%s\"", url);
+		return ERROR_RTC_SDP_EXCHANGE;
+	}
+
+	memset(&url_data, 0, sizeof(url_data));
+	int32_t url_parse_result
+		= yang_http_url_parse(Yang_IpFamilyType_IPV4, url, &url_data);
+	if (url_parse_result != Yang_Ok)
+	{
+		return url_parse_result;
+	}
+	err = yang_zlm_query(session,
+						 zlm,
+						 role == YangRecvonly ? 1 : 0,
+						 (char *)url_data.server,
+						 url_data.port,
+						 url_data.stream,
+						 sdp);
 	return err;
 }
 
@@ -116,4 +139,23 @@ int32_t yang_zlm_connectRtcServer(YangRtcConnection* conn){
 	yang_free(tsdp);
 	yang_destroy_zlmresponse(&zlm);
     return err;
+}
+
+int32_t yang_zlm_connectRtcServerUrl(YangRtcConnection* conn, const char *url) {
+	int err = Yang_Ok;
+	ZlmSdpResponseType zlm;
+	YangRtcSession *session = conn->session;
+	yang_memset(&zlm, 0, sizeof(ZlmSdpResponseType));
+	char *tsdp = NULL;
+	conn->createOffer(session, &tsdp);
+	if ((err = yang_zlm_doHandleSignal2(session,
+										&zlm, tsdp,
+										session->context.streamConfig->localPort,
+										session->context.streamConfig->streamDirection,
+										url)) == Yang_Ok) {
+		conn->setRemoteDescription(conn->session, zlm.sdp);
+	}
+	yang_free(tsdp);
+	yang_destroy_zlmresponse(&zlm);
+	return err;
 }

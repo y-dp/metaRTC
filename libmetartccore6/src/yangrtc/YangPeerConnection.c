@@ -45,6 +45,21 @@ int32_t g_yang_pc_connectServer(YangPeer* peer){
 	return yang_srs_connectRtcServer(conn);
 }
 
+static int32_t g_yang_pc_connectZlmServer(YangPeer *peer, const char *url) {
+	if (peer == NULL || peer->conn == NULL) {
+		return ERROR_RTC_PEERCONNECTION;
+	}
+	int32_t mediaServer = peer->avinfo->sys.mediaServer;
+	if (mediaServer != Yang_Server_Zlm) {
+		return ERROR_RTC_PEERCONNECTION;
+	}
+	YangRtcConnection *conn = (YangRtcConnection*)peer->conn;
+	if (conn->isConnected(conn->session)) {
+		return Yang_Ok;
+	}
+
+	return yang_zlm_connectRtcServerUrl(conn, url);
+}
 
 int32_t g_yang_pc_connectWhipWhepServer(YangPeer* peer,char* url){
 	if(peer==NULL||url==NULL) return ERROR_RTC_PEERCONNECTION;
@@ -155,6 +170,7 @@ void yang_create_peerConnection(YangPeerConnection* peerconn){
 	peerconn->getIceCandidateType=g_yang_pc_getIceCandidateType;
 
 	peerconn->connectSfuServer=g_yang_pc_connectServer;
+	peerconn->connectZlmServer = g_yang_pc_connectZlmServer;
 	peerconn->connectWhipWhepServer=g_yang_pc_connectWhipWhepServer;
 
 	peerconn->createOffer=g_yang_pc_createOffer;
