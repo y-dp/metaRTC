@@ -5,7 +5,7 @@
 #ifndef INCLUDE_YANG_CONFIG_H_
 #define INCLUDE_YANG_CONFIG_H_
 
-#define Yang_Enable_Datachannel 1
+#define Yang_Enable_Datachannel 0
 #define Yang_Enable_Openh264    1
 #define Yang_Enable_Json        1
 
@@ -26,7 +26,7 @@
 #define Yang_Enable_AV1_Encoding 0
 
 #define Yang_Enable_RTC_Audio 1
-#define Yang_Enable_RTC_Video 1
+#define Yang_Enable_RTC_Video 0
 
 #define Yang_Enable_Tcp_Srs 1
 

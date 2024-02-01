@@ -195,11 +195,13 @@ void* yang_run_rtctcp_thread_srs(void *obj) {
 			recvData=yangfalse;
 			if (msgLen == 0) {
 				msgLen = yang_get_be16((uint8_t*)(readBuffer));
+#if 0 // yangdingpeng mod, DTLS包可能比较大
 				if (msgLen > kRtpPacketSize) {
 					yang_error("rtc tcp error pkt size=%hu", msgLen);
 					msgLen = 0;
 					msgReadLen = 0;
 				}
+#endif
 				continue;
 			}
 

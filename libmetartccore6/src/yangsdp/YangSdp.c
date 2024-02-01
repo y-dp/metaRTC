@@ -234,10 +234,16 @@ int32_t yang_sdp_genLocalSdp2(YangRtcSession *session, int32_t localport,char *d
 			NULL);
 	YangMediaPayloadType *audiotype =
 			&audio_media_desc->payload_types.payload[0];
+#if 1 // yangdingpeng mod
+	audiotype->payload_type = 0; // 0 for PCMU,
+	yang_strcpy(audiotype->encoding_name, "PCMU");
+	audiotype->clock_rate = 8000;
+#else
 	audiotype->payload_type = session->audioPayloadType;
 	yang_strcpy(audiotype->encoding_name, "opus");
 	audiotype->clock_rate = session->context.avinfo->audio.sample; //48000;
 	yang_itoa2(session->context.avinfo->audio.channel,audiotype->encoding_param, 10);
+#endif
 
 
 	yang_strcpy(audiotype->format_specific_param,

@@ -682,6 +682,9 @@ int32_t yang_rtcconn_startRtc(YangRtcSession* session,char* sdp){
 
 		err=yang_create_rtcsocket(session->context.sock,session->context.avinfo->sys.familyType,(YangSocketProtocol)session->context.avinfo->rtc.rtcSocketProtocol,session->context.streamConfig->localPort);
 		if(err!=Yang_Ok) return yang_error_wrap(err,"setRemoteDescription error!");
+        if (session->context.avinfo->sys.mediaServer == Yang_Server_Zlm) {
+            yang_create_rtcsocket_srs(session->context.sock,(YangSocketProtocol)session->context.avinfo->rtc.rtcSocketProtocol);
+        }
 	#if Yang_Enable_Tcp_Srs
 		if(session->context.avinfo->sys.mediaServer==Yang_Server_Srs)
 				yang_create_rtcsocket_srs(session->context.sock,(YangSocketProtocol)session->context.avinfo->rtc.rtcSocketProtocol);
