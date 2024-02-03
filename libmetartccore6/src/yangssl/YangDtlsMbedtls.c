@@ -470,6 +470,9 @@ int32_t yang_create_rtcdtls(YangRtcDtls *dtls,yangbool isServer) {
 void yang_destroy_rtcdtls(YangRtcDtls *dtls) {
 	if (!dtls)	return;
 	YangDtlsSession* session=&dtls->session;
+	if (dtls->srtp) {
+		yang_destroy_srtp(dtls->srtp);
+	}
 	if(session->entropy) mbedtls_entropy_free(session->entropy);
 	if(session->ctrDrbg) mbedtls_ctr_drbg_free(session->ctrDrbg);
 	if(session->sslConfig) mbedtls_ssl_config_free(session->sslConfig);

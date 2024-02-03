@@ -14,9 +14,11 @@ cd $proj_root_dir/libmetartccore6
 third_party_pm_dir=${third_party_pm_dir} ./cmake_arm_rk.sh
 install build/libmetartccore6.a ${install_dir}/lib
 
-cd $proj_root_dir/libmetartc6
-./cmake_arm_rk.sh
-install build/libmetartc6.a ${install_dir}/lib
+if false; then
+    cd $proj_root_dir/libmetartc6
+    ./cmake_arm_rk.sh
+    install build/libmetartc6.a ${install_dir}/lib
+fi
 
 cd $proj_root_dir
 cp -rf include/ $install_dir

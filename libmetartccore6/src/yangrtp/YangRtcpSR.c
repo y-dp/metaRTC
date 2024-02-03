@@ -27,8 +27,9 @@ void yang_create_rtcpSR(YangRtcpCommon *comm) {
 }
 
 void yang_destroy_rtcpSR(YangRtcpCommon *comm) {
-	if (comm || comm->sr == NULL)
+	if (comm == NULL || comm->sr == NULL) {
 		return;
+	}
 	yang_free(comm->sr);
 }
 

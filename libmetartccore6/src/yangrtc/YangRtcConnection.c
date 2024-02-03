@@ -576,6 +576,8 @@ int32_t yang_rtcconn_getRemoteSdp(YangRtcSession *session, char *sdpstr){
 	YangSdp sdp;
 	yang_memset(&sdp,0,sizeof(YangSdp));
 	yang_create_rtcsdp(&sdp);
+	yang_create_stringVector(&sdp.groups);
+	yang_create_stringVector(&sdp.msids);
 #if Yang_Enable_RTC_Audio
 	if(session->remote_audio==NULL) session->remote_audio=(YangAudioParam*)yang_calloc(sizeof(YangAudioParam),1);
 #endif
@@ -588,6 +590,8 @@ int32_t yang_rtcconn_getRemoteSdp(YangRtcSession *session, char *sdpstr){
 	if((err=yang_sdp_parseRemoteSdp(session,&sdp))!=Yang_Ok){
 		yang_error("parseRemoteSdp error!");
 	}
+	yang_destroy_stringVector(&sdp.groups);
+	yang_destroy_stringVector(&sdp.msids);
 	yang_destroy_rtcsdp(&sdp);
 
 	return err;

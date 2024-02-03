@@ -40,6 +40,9 @@ void yang_destroy_stringVector(YangStringVector* vec){
 }
 void yang_clear_stringVector(YangStringVector* vec){
 	if(vec==NULL) return;
+	for(int i=0;i<vec->vsize;i++){
+		yang_free(vec->payload[i]);
+	}
 	yang_memset(vec->payload,0,sizeof(char*)*vec->capacity);
 	vec->vsize=0;
 }

@@ -534,6 +534,9 @@ void yang_destroy_rtcdtls(YangRtcDtls *dtls) {
 		SSL_CTX_free(dtls->session.sslctx);
 		dtls->session.sslctx = NULL;
 	}
+	if (dtls->session.srtp) {
+		yang_destroy_srtp(dtls->session.srtp);
+	}
 
 	if (dtls->session.ssl) {
 		// this function will free bio_in and bio_out

@@ -25,7 +25,7 @@ void yang_create_rtcpCompound(YangRtcpCompound* rtcp){
 void yang_destroy_rtcpCompound(YangRtcpCompound* rtcp){
 	if(rtcp==NULL) return;
 	yang_rtcpCompound_clear(rtcp);
-
+	yang_destroy_YangRtcpCommonVector(&rtcp->rtcpVector);
 }
 int32_t yang_decode_rtcpCompound(YangRtcpCompound* rtcps,YangBuffer *buffer){
 	if(rtcps==NULL || buffer==NULL) return 1;

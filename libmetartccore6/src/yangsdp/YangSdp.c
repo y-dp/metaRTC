@@ -10,6 +10,7 @@
 #include <yangutil/sys/YangSocket.h>
 #include <yangutil/sys/YangCString.h>
 
+#if Yang_Enable_RTC_Video
 void yang_sdp_genLocalSdp_payloadType(YangMediaPayloadType *videotype){
 	videotype->clock_rate = 90000;
 	yang_strcpy(videotype->format_specific_param,"level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f");
@@ -18,6 +19,7 @@ void yang_sdp_genLocalSdp_payloadType(YangMediaPayloadType *videotype){
 	yang_insert_stringVector(&videotype->rtcp_fb, "nack");
 	yang_insert_stringVector(&videotype->rtcp_fb, "nack pli");
 }
+#endif
 
 void  yang_sdp_genLocalSdp_candidate(YangRtcSession *session,YangMediaDesc *media_desc,char* localIp,int32_t localport){
     //candidate   
@@ -424,7 +426,7 @@ int32_t yang_sdp_genLocalSdp2(YangRtcSession *session, int32_t localport,char *d
 			yang_strcpy(dst,src);
 			//yang_cstr_replace(src, dst, (char*) "\r\n", (char*) "\n");
 	}
-
+	yang_destroy_stringVector(&local_sdp->msids);
 	yang_destroy_rtcsdp(local_sdp);
 	yang_free(local_sdp);
 	yang_free(src);
